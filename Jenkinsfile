@@ -2,16 +2,16 @@ pipeline {
     agent any
     
     environment {
-        FLUTTER_VERSION = '3.3.0' // Specify the Flutter version you want to install
+        FLUTTER_VERSION = '3.24.3' // Specify the Flutter version you want to install
     }
 
     stages {
         stage('Install Dependencies') {
             steps {
                 sh '''
-                # Install wget and xz if missing
+                # Install apt dependencies
                 apt-get update
-                apt-get install -y wget xz-utils
+                apt-get install -y wget xz-utils clang cmake ninja-build pkg-config
 
                 # Install Flutter SDK
                 wget -q https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz
