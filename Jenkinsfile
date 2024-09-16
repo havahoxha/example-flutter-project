@@ -9,12 +9,12 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 sh '''
-                # Install wget if missing
+                # Install wget and xz if missing
                 apt-get update
-                apt-get install -y wget
+                apt-get install -y wget xz-utils
 
                 # Install Flutter SDK
-                wget https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz
+                wget -q https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz
                 tar xf flutter_linux_${FLUTTER_VERSION}-stable.tar.xz
                 export PATH="$PATH:$WORKSPACE/flutter/bin"
                 flutter doctor
