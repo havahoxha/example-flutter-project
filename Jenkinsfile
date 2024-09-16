@@ -11,13 +11,12 @@ pipeline {
                 sh '''
                 # Install apt dependencies
                 apt-get update
-                apt-get install -y wget xz-utils clang cmake ninja-build pkg-config
+                apt-get install -y wget xz-utils clang cmake ninja-build pkg-config libgtk-3-dev
 
                 # Install Flutter SDK
                 wget -q https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz
                 tar xf flutter_linux_${FLUTTER_VERSION}-stable.tar.xz
                 export PATH="$PATH:$WORKSPACE/flutter/bin"
-                flutter doctor
                 '''
             }
         }
