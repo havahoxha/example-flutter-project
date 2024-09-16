@@ -10,8 +10,8 @@ pipeline {
             steps {
                 sh '''
                 # Install wget if missing
-                sudo apt-get update
-                sudo apt-get install -y wget
+                apt-get update
+                apt-get install -y wget
 
                 # Install Flutter SDK
                 wget https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz
