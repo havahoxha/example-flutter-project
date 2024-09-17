@@ -17,6 +17,7 @@ pipeline {
                 wget -q https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz
                 tar xf flutter_linux_${FLUTTER_VERSION}-stable.tar.xz
                 export PATH="$PATH:$WORKSPACE/flutter/bin"
+                flutter doctor
                 '''
             }
         }
@@ -31,13 +32,16 @@ pipeline {
             steps {
                 script {
                     def mainDartPath = 'lib/main.dart'
+                    echo "Reading ${mainDartPath}"
                     def content = readFile(mainDartPath)
                     
                     // Find APP_VERSION in main.dart
+                    echo "Finding APP_VERSION in ${mainDartPath}"
                     def versionPattern = /APP_VERSION\s*=\s*['"](\d+)\.(\d+)\.(\d+)['"]/
                     def matcher = content =~ versionPattern
 
                     if (matcher) {
+                        echo "Found APP_VERSION in ${mainDartPath}"
                         def major = matcher[0][1].toInteger()
                         def minor = matcher[0][2].toInteger()
                         def patch = matcher[0][3].toInteger() + 1
@@ -45,10 +49,14 @@ pipeline {
                         def newVersion = "${major}.${minor}.${patch}"
 
                         // Replace the APP_VERSION line with updated patch version
+                        echo "Updating APP_VERSION to ${newVersion}"
+
                         def updatedContent = content.replaceFirst(versionPattern, "APP_VERSION = '${newVersion}'")
+                        echo "Updated content of ${mainDartPath}"
 
                         // Write updated content back to the file
                         writeFile(file: mainDartPath, text: updatedContent)
+                        echo "Applying content to ${mainDartPath}"
 
                         echo "Updated APP_VERSION to ${newVersion}"
                     } else {
