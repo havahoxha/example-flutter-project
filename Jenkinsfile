@@ -6,6 +6,18 @@ pipeline {
     }
 
     stages {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+        
+        stage('Clone Repo') {
+            steps {
+                git branch: 'main', url: 'https://github.com/havahoxha/example-flutter-project.git'
+            }
+        }
+
         stage('Install Dependencies') {
             steps {
                 sh '''
@@ -23,12 +35,7 @@ pipeline {
             }
         }
 
-        stage('Clone Repo') {
-            steps {
-                git branch: 'main', url: 'https://github.com/havahoxha/example-flutter-project.git'
-            }
-        }
-
+   
         stage('Increase Patch Version') {
             steps {
                 script {
