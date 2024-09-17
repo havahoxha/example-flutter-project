@@ -5,6 +5,14 @@ pipeline {
         FLUTTER_VERSION = '3.24.3' // Specify the Flutter version you want to install
     }
 
+    stages{
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+    }
+
     stages {
         stage('Install Dependencies') {
             steps {
