@@ -35,39 +35,23 @@ pipeline {
                     echo "Reading ${mainDartPath}"
                     def content = readFile(mainDartPath)
                     
-                    // Find APP_VERSION in main.dart
-                    echo "Finding APP_VERSION in ${mainDartPath}"
-                    def versionPattern = /APP_VERSION\s*=\s*['"](\d+)\.(\d+)\.(\d+)['"]/
-                    def matcher = content =~ versionPattern
+                    def newVersion = updateVersion(content)
 
-                    if (matcher) {
-                        echo "Found APP_VERSION in ${mainDartPath}"
-                        def major = matcher[0][1].toInteger()
-                        def minor = matcher[0][2].toInteger()
-                        def patch = matcher[0][3].toInteger() + 1
+                    // Replace the APP_VERSION line with the updated patch version
+                    echo "Updating APP_VERSION to ${newVersion}"
 
-                        def newVersion = "${major}.${minor}.${patch}"
+                    def updatedContent = content.replaceFirst(/APP_VERSION\s*=\s*['"](\d+)\.(\d+)\.(\d+)['"]/, "APP_VERSION = '${newVersion}'")
+                    echo "Updated content of ${mainDartPath}"
 
-                        // Replace the APP_VERSION line with updated patch version
-                        echo "Updating APP_VERSION to ${newVersion}"
+                    try {
+                        echo "Attempting to write to file: ${mainDartPath}"
+                        writeFile(file: mainDartPath, text: updatedContent)
 
-                        def updatedContent = content.replaceFirst(versionPattern, "APP_VERSION = '${newVersion}'")
-                        echo "Updated content of ${mainDartPath}"
-
-                        try {
-                            echo "Attempting to write to file: ${mainDartPath}"
-                            writeFile(file: mainDartPath, text: updatedContent)
-
-                            echo "Updated APP_VERSION to ${newVersion}"
-                        } catch (Exception e) {
-                            // Log the error message
-                            echo "Error while writing to file: ${e.getMessage()}"
-                            error("Failed to write version to file: ${mainDartPath}")
-                        }
-
-                        
-                    } else {
-                        error "APP_VERSION not found in ${mainDartPath}"
+                        echo "Updated APP_VERSION to ${newVersion}"
+                    } catch (Exception e) {
+                        // Log the error message
+                        echo "Error while writing to file: ${e.getMessage()}"
+                        error("Failed to write version to file: ${mainDartPath}")
                     }
                 }
             }
@@ -94,5 +78,21 @@ pipeline {
         failure {
             echo 'Build failed.'
         }
+    }
+}
+
+@NonCPS
+def updateVersion(content) {
+    def versionPattern = /APP_VERSION\s*=\s*['"](\d+)\.(\d+)\.(\d+)['"]/
+    def matcher = content =~ versionPattern
+
+    if (matcher) {
+        def major = matcher[0][1].toInteger()
+        def minor = matcher[0][2].toInteger()
+        def patch = matcher[0][3].toInteger() + 1
+
+        return "${major}.${minor}.${patch}"
+    } else {
+        error "APP_VERSION not found in the file."
     }
 }
