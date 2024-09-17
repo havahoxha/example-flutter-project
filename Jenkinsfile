@@ -17,6 +17,7 @@ pipeline {
                 wget -q https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz
                 tar xf flutter_linux_${FLUTTER_VERSION}-stable.tar.xz
                 export PATH="$PATH:$WORKSPACE/flutter/bin"
+                rm -rf $WORKSPACE/flutter/.git # Remove the .git directory to avoid version resolution issues
                 flutter doctor
                 '''
             }
