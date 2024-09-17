@@ -70,9 +70,6 @@ pipeline {
     }
     
     post {
-        always {
-            archiveArtifacts artifacts: 'build/app/outputs/flutter-linux/*', allowEmptyArchive: true
-        }
         success {
             echo 'Build completed successfully!'
         }
