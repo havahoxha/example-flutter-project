@@ -54,11 +54,18 @@ pipeline {
                         def updatedContent = content.replaceFirst(versionPattern, "APP_VERSION = '${newVersion}'")
                         echo "Updated content of ${mainDartPath}"
 
-                        // Write updated content back to the file
-                        writeFile(file: mainDartPath, text: updatedContent)
-                        echo "Applying content to ${mainDartPath}"
+                        try {
+                            echo "Attempting to write to file: ${mainDartPath}"
+                            writeFile(file: mainDartPath, text: updatedContent)
 
-                        echo "Updated APP_VERSION to ${newVersion}"
+                            echo "Updated APP_VERSION to ${newVersion}"
+                        } catch (Exception e) {
+                            // Log the error message
+                            echo "Error while writing to file: ${e.getMessage()}"
+                            error("Failed to write version to file: ${mainDartPath}")
+                        }
+
+                        
                     } else {
                         error "APP_VERSION not found in ${mainDartPath}"
                     }
